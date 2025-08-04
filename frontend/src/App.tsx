@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Building2, Users, Calendar, FileText, BarChart3, Bell, Settings, LayoutDashboard, ChevronLeft, ChevronRight } from 'lucide-react'
 import DepartmentManagement from './components/DepartmentManagement'
 import EmployeeManagement from './components/EmployeeManagement'
+import LeaveTypeManagement from './components/LeaveTypeManagement'
+import LeaveRequestManagement from './components/LeaveRequestManagement'
 import './App.css'
 
 function App() {
@@ -212,6 +214,10 @@ function App() {
             <DepartmentManagement onBack={() => setActiveModule('dashboard')} />
           ) : activeModule === 'employees' ? (
             <EmployeeManagement onBack={() => setActiveModule('dashboard')} />
+          ) : activeModule === 'leave-types' ? (
+            <LeaveTypeManagement onBack={() => setActiveModule('dashboard')} />
+          ) : activeModule === 'leave-requests' ? (
+            <LeaveRequestManagement onBack={() => setActiveModule('dashboard')} />
           ) : (
             <div className="p-6">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
