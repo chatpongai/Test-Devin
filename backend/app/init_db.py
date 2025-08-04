@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
-from .database import Base, DATABASE_URL
-from .models import Department
+from database import Base, DATABASE_URL
+from models import Department
 
 def create_tables():
     engine = create_engine(DATABASE_URL)
