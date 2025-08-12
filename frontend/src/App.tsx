@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Building2, Users, Calendar, FileText, BarChart3, Bell, Settings, LayoutDashboard, ChevronLeft, ChevronRight } from 'lucide-react'
 import DepartmentManagement from './components/DepartmentManagement'
 import EmployeeManagement from './components/EmployeeManagement'
@@ -9,6 +9,56 @@ import './App.css'
 function App() {
   const [activeModule, setActiveModule] = useState('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  
+  const [dashboardStats, setDashboardStats] = useState({
+    totalEmployees: 0,
+    totalDepartments: 0,
+    pendingRequests: 0,
+    totalLeaveTypes: 0
+  })
+  const [dashboardLoading, setDashboardLoading] = useState(false)
+
+  const API_BASE_URL = 'http://localhost:8000'
+
+  const fetchDashboardStats = async () => {
+    setDashboardLoading(true)
+    try {
+      const [employeesRes, departmentsRes, leaveRequestsRes, leaveTypesRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/employees/`),
+        fetch(`${API_BASE_URL}/departments/`),
+        fetch(`${API_BASE_URL}/leave-requests/?status=Pending`),
+        fetch(`${API_BASE_URL}/leave-types/`)
+      ])
+
+      const [employees, departments, leaveRequests, leaveTypes] = await Promise.all([
+        employeesRes.ok ? employeesRes.json() : [],
+        departmentsRes.ok ? departmentsRes.json() : [],
+        leaveRequestsRes.ok ? leaveRequestsRes.json() : [],
+        leaveTypesRes.ok ? leaveTypesRes.json() : []
+      ])
+
+      setDashboardStats({
+        totalEmployees: employees.length,
+        totalDepartments: departments.length,
+        pendingRequests: leaveRequests.length,
+        totalLeaveTypes: leaveTypes.length
+      })
+    } catch (err) {
+      console.error('Failed to fetch dashboard statistics:', err)
+    } finally {
+      setDashboardLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDashboardStats()
+  }, [])
+
+  useEffect(() => {
+    if (activeModule === 'dashboard') {
+      fetchDashboardStats()
+    }
+  }, [activeModule])
 
   const modules = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, description: 'Overview and statistics' },
@@ -124,7 +174,9 @@ function App() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Total Employees</p>
-                      <p className="text-2xl font-bold text-gray-900">1</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {dashboardLoading ? '...' : dashboardStats.totalEmployees}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -136,7 +188,9 @@ function App() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Departments</p>
-                      <p className="text-2xl font-bold text-gray-900">1</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {dashboardLoading ? '...' : dashboardStats.totalDepartments}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -148,7 +202,9 @@ function App() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Pending Requests</p>
-                      <p className="text-2xl font-bold text-gray-900">0</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {dashboardLoading ? '...' : dashboardStats.pendingRequests}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -160,7 +216,9 @@ function App() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Leave Types</p>
-                      <p className="text-2xl font-bold text-gray-900">0</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {dashboardLoading ? '...' : dashboardStats.totalLeaveTypes}
+                      </p>
                     </div>
                   </div>
                 </div>

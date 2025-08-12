@@ -10,7 +10,8 @@ export default defineConfig({
       'localhost',
       '127.0.0.1',
       '172.16.17.2',
-      'project-creator-app-tunnel-7d27lgax.devinapps.com'
+      'project-creator-app-tunnel-7d27lgax.devinapps.com',
+      'dashboard-fix-app-tunnel-plj90ga9.devinapps.com'
     ]
   }
 })
